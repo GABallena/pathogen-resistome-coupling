@@ -1,0 +1,131 @@
+# postmerge_config.sample.toml
+# NOTE:
+# - Keys mirror CLI flags with hyphens replaced by underscores.
+# - Types matter: keep numbers as numbers, booleans as true/false, arrays in [ ... ].
+# - Any key you omit uses the script’s default. CLI always overrides TOML.
+
+############################
+# I/O
+############################
+
+merged   = "path/to/merged.tsv"     # REQUIRED. Wide table with columns: sample,taxon,rank,tool1,tool2...
+counts   = ""                       # Optional TSV/CSV with per-sample total reads: columns: sample,N
+out_dir  = "results/eco_metrics"    # Output directory; created if missing
+
+############################
+# Scope & tools to compare
+############################
+
+rank      = "species"               # Target taxonomic rank: "species","genus","family","order","class","phylum"
+tool_pair = "metaphlan,bracken"     # Two columns in merged to compare, comma-separated
+
+############################
+# Agreement (compositional)
+############################
+
+agreement_mode = "clr"              # "clr","alr","plr" (centered log-ratio, additive log-ratio, pairwise log-ratio)
+pseudocount    = 1e-6               # Used only when transforming zeros for CLR/ALR
+alr_ref        = ""                 # Exact taxon name to use as ALR denominator; empty => auto/pivots
+alr_topk       = 0                  # If >0 and no alr_ref, average ALR over top-k taxa (by tool2 abundance)
+plr_maxpairs   = 50000              # PLR: max number of log-ratio pairs per-sample (0 = use all)
+
+############################
+# Depths / forecasts
+############################
+
+depths          = []                # Example: [1e8, 2e8, 4e8]. If empty, script uses median N when available
+forecast_depths = []                # Depths at which to forecast zero-fraction & suggest Pearson/Spearman
+
+############################
+# Moments & bootstrap
+############################
+
+n_bootstrap        = 500            # Bootstrap reps for curvature (naive vs predicted) CIs
+bootstrap_block_col = ""            # Optional metadata column name to define resampling blocks (e.g., subject/site)
+bootstrap_max      = 0              # If >0, cap bootstrap reps at this number (useful with eps early-stop)
+bootstrap_eps      = 0.0            # Early stop: if median CI width change < eps over last 200 reps
+
+############################
+# AFD (Abundance Fluctuation Distribution)
+############################
+
+afd                  = "nb"         # "nb","pln","both" (Negative Binomial / Poisson–lognormal / compare both)
+fit_per_species_beta = false        # If true, MLE a separate NB beta per species (with guards)
+beta_grid            = []           # Optional grid search for shared beta, e.g. [5.0, 10.0, 20.0]
+ppc_draws            = 0            # Posterior predictive draws for zero-fraction PPC (0 = off)
+pln_quadrature       = 30           # Gauss–Hermite nodes for PLN fit (accuracy vs speed)
+
+############################
+# Cross-validated shared beta (NB)
+############################
+
+cv_folds  = 0                       # 0/1 = off; >=2 enables k-fold CV for shared beta
+cv_metric = "occupancy_mse"         # "occupancy_mse" or "zero_fraction_mse"
+
+############################
+# Occupancy / filtering / richness
+############################
+
+target_detect = 0.95                # q in N*(q): desired detection probability
+min_occupancy = 0.5                 # Model-guided filtering threshold before re-estimating agreement
+
+############################
+# Sensitivity grids
+############################
+
+pseudocount_grid = []               # e.g. [1e-8, 1e-7, 1e-6, 1e-5] to see how agreement medians shift
+q_grid          = []                # e.g. [0.8, 0.9, 0.95, 0.99] to report N*(q) across targets
+
+############################
+# GOF & multiple testing
+############################
+
+gof_alpha   = 0.05                  # FDR threshold (BH) for NB χ² per-species GOF
+report_holm = false                 # Also compute Holm–Bonferroni q-values
+
+############################
+# Distributional diagnostics
+############################
+
+slope_min_n = 10                    # Min species to run Taylor’s law test (log Var ~ log Mean)
+mad_min_n   = 30                    # Min species to run lognormal MAD tests (AD; Shapiro if n<=5000)
+
+############################
+# Metadata-driven selection
+############################
+
+metadata            = ""            # CSV/TSV/XLSX metadata with at least one sample identifier column
+sample_col          = ""            # Explicit sample ID column in metadata (auto-detected if empty)
+include_regex       = ""            # Keep only samples whose IDs match this regex
+cohort_col          = ""            # Metadata column to filter by cohort values
+cohort_allow        = ""            # Comma list of allowed cohort values, e.g. "A,B,C"
+date_col            = ""            # Metadata date column name for age filtering
+exclude_old_before  = ""            # ISO date string; exclude samples before this date (e.g. "2024-01-01")
+neg_regex           = "(?i)(neg|blank|ntc|control)"  # Regex to mark negatives by ID
+
+############################
+# Decontam options
+############################
+
+decontam          = "none"          # "none","subtract","prevalence"
+prevalence_thresh = 0.5             # For prevalence-based drop: keep taxa common in positives vs negatives
+
+############################
+# Stratification & batches
+############################
+
+stratify  = false                   # If true, run Taylor/MAD within strata
+batch_col = ""                      # Metadata column to define strata (e.g., batch/site/cohort)
+
+############################
+# Priority taxa reporting
+############################
+
+priority_taxa = ""                  # CSV/TSV with a 'taxon' column to report predicted occupancy & N*(q)
+
+############################
+# Logging / RNG
+############################
+
+log_level = "INFO"                  # "DEBUG","INFO","WARNING","ERROR"
+seed      = 1337                    # RNG seed used for agreement, bootstrap, CV, PPC

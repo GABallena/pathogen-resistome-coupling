@@ -1,18 +1,4 @@
 #!/usr/bin/env Rscript
-# Portfolio-safe script (paths/identifiers generalized; inputs not included).
-
-# ------- Working directory handling -------
-# When run via `Rscript`, set working directory to the script's directory.
-try({
-  args_all <- commandArgs(trailingOnly = FALSE)
-  file_arg <- grep("^--file=", args_all, value = TRUE)
-  if(length(file_arg) == 1){
-    script_path <- normalizePath(sub("^--file=", "", file_arg))
-    setwd(dirname(script_path))
-  }
-}, silent = TRUE)
-cat("Working directory:", getwd(), "\n")
-
 
 # rgi_viz.R — Visualization toolkit for CARD RGI outputs (contig-level)
 #
@@ -56,14 +42,6 @@ suppressPackageStartupMessages({
   library(scales)
   library(rlang)
   library(forcats)
-
-# ---- Config ----
-RGI_TSV <- Sys.getenv("RGI_TSV", "results/tables/rgi_summary.tsv")
-CONTIG_META_TSV <- Sys.getenv("CONTIG_META_TSV", "results/tables/contig_metadata.tsv")
-SAMPLE_META_TSV <- Sys.getenv("SAMPLE_META_TSV", "metadata/sample_metadata.tsv")
-OUT_DIR <- Sys.getenv("OUT_DIR", "results/figures/amr")
-dir.create(OUT_DIR, recursive = TRUE, showWarnings = FALSE)
-
 })
 
 # -- Helpers -------------------------------------------------------------------
@@ -1403,3 +1381,8 @@ if (!all(is.na(all_df$mechanism_primary)) && nrow(class_counts) > 0) {
 }
 
 message("Done. Outputs written to: ", normalizePath(output_dir))
+
+
+
+
+
