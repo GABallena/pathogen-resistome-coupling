@@ -1,7 +1,35 @@
-# Pathogen–resistome coupling (portfolio): meta-ecology add-on
+# pathogen-resistome-coupling
 
-This repo contains analysis code supporting ecological summaries and tool comparisons.
+Analysis templates for quantifying and visualizing **pathogen–resistome relationships** from metagenomics-derived tables.
 
-- `analysis/metaeco/calculate_diversity.py`: compute alpha/beta diversity from Bracken outputs.
+The goal is to make “coupling” analyses reproducible:
+- align taxa abundance with AMR feature abundance
+- compute correlations / associations robustly
+- visualize patterns with clear assumptions and QC checks
 
-This file is portfolio-safe (identifiers generalized; no data included).
+## Typical workflow
+1. Import/standardize:
+   - taxa tables (e.g., genus/species abundance)
+   - resistome tables (e.g., ARG family/class abundance)
+   - sample metadata (site/time/condition)
+2. QC + filtering:
+   - library size checks, prevalence thresholds
+   - compositional considerations (transformations)
+3. Association analyses:
+   - correlation / regression / permutation-based checks
+4. Visualization:
+   - heatmaps, network-style summaries, ranked associations
+
+## Inputs
+This repo assumes you provide your own `data/` tables locally.
+
+Recommended structure:
+```
+data/
+  metadata.csv
+  taxa_table.tsv
+  resistome_table.tsv
+```
+
+## License
+MIT — see `LICENSE`.
