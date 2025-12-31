@@ -1,0 +1,46 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+
+# R
+.Rhistory
+.RData
+.Rproj.user/
+
+# Workflow outputs / large data
+results/
+work/
+tmp/
+logs/
+db/downloads/
+
+# Bioinformatics
+*.fastq
+*.fastq.gz
+*.fq
+*.fq.gz
+*.bam
+*.sam
+*.cram
+*.fasta
+*.fa
+*.fna
+*.ffn
+*.gb
+*.gbk
+*.gff
+*.gff3
+*.bed
+*.vcf
+*.vcf.gz
+*.qza
+*.qzv
+*.zip
+*.tar
+*.tar.gz
